@@ -9,6 +9,8 @@ namespace ProductWebService.Model.Services
     {
         List<ProductDto> GetProductsList();
         ProductDto GetProduct(Guid id);
+
+        void AddNewProduct(AddNewProductDto addNewProductDto);
     }
 
     public class ProductService : IProductService
@@ -18,6 +20,24 @@ namespace ProductWebService.Model.Services
         public ProductService(ProductDatabaseContext databaseContext)
         {
             this.databaseContext = databaseContext;
+        }
+
+        public void AddNewProduct(AddNewProductDto addNewProductDto)
+        {
+            var category = databaseContext.Categories.Find(addNewProductDto.CategoryId);
+            if (category == null)
+                throw new Exception("Category not found");
+
+            Product product = new Product
+            {
+                Image=addNewProductDto.Image,
+                Price=addNewProductDto.Price,
+                Description=addNewProductDto.Description,
+                Name =addNewProductDto.Name,
+                Category=category
+            };
+            databaseContext.Products.Add(product);
+            databaseContext.SaveChanges();
         }
 
         public ProductDto GetProduct(Guid id)
@@ -82,5 +102,16 @@ namespace ProductWebService.Model.Services
         public Guid CategoryId { get; set; }
 
         public string Category { get; set; }
+    }
+
+    public class AddNewProductDto
+    {
+        
+        public string? Name { get; set; }
+        public string? Description { get; set; }
+        public string? Image { get; set; }
+        public int Price { get; set; }
+        public Guid CategoryId { get; set; }
+
     }
 }
