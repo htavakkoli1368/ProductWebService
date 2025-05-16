@@ -42,7 +42,8 @@ namespace ProductWebService.Model.Services
 
         public ProductDto GetProduct(Guid id)
         {
-            var product = databaseContext.Products                        
+            var product = databaseContext.Products
+                          .Include(p => p.Category)
                           .SingleOrDefault(c => c.Id==id);
 
             if (product == null)
@@ -54,7 +55,7 @@ namespace ProductWebService.Model.Services
                 Image = product.Image,
                 Name = product.Name,
                 Price = product.Price,
-                ProductCategory = new ProductCategoryDto
+                ProductCategory = product.Category == null ? null : new ProductCategoryDto
                 {
                     Category = product.Category.Name,
                     CategoryId = product.Category.Id
